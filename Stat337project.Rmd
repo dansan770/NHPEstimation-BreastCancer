@@ -1,6 +1,6 @@
 ---
-title: "Untitled"
-author: "Aditi Patel"
+title: "Stat 337 Project"
+author: "Aditi, Ade, Daniela"
 date: "4/24/2021"
 output: pdf_document
 ---
