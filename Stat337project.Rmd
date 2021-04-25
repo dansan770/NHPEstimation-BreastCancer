@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+author: "Aditi Patel"
+date: "4/24/2021"
+output: pdf_document
+---
+
+```{r}
+install.packages("jsonlite", repos="https://cran.rstudio.com/")
+library("jsonlite")
+library(dplyr)
+
+json_file <- 'https://datahub.io/machine-learning/breast-cancer/datapackage.json'
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+# get list of all resources:
+print(json_data$resources$name)
+
+# print all tabular data(if exists any)
+for(i in 1:length(json_data$resources$datahub$type)){
+  if(json_data$resources$datahub$type[i]=='derived/csv'){
+    path_to_file = json_data$resources$path[i]
+    data <- read.csv(url(path_to_file))
+    print(data)
+  }
+}
+head(data)
+
+data
+
+groupeddata3039<-filter(data, age == "40-49")
+groupeddata3039
+
+
+gd<-c(groupeddata3039$deg.malig)
+gd
+
+#malignancy<-c(gd[[1]],gd[[2]])
+#malignancy
+
+P<-prop.table(table(gd[1:89],gd[2:90]),1)
+P
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
