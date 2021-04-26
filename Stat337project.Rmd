@@ -6,6 +6,8 @@ output: pdf_document
 ---
 
 ```{r}
+
+#load data 
 install.packages("jsonlite", repos="https://cran.rstudio.com/")
 library("jsonlite")
 library(dplyr)
@@ -13,10 +15,10 @@ library(dplyr)
 json_file <- 'https://datahub.io/machine-learning/breast-cancer/datapackage.json'
 json_data <- fromJSON(paste(readLines(json_file), collapse=""))
 
-# get list of all resources:
+#get list of all resources:
 print(json_data$resources$name)
 
-# print all tabular data(if exists any)
+#print all tabular data(if exists any)
 for(i in 1:length(json_data$resources$datahub$type)){
   if(json_data$resources$datahub$type[i]=='derived/csv'){
     path_to_file = json_data$resources$path[i]
@@ -24,41 +26,109 @@ for(i in 1:length(json_data$resources$datahub$type)){
     print(data)
   }
 }
-head(data)
 
+#print head of data 
+head(data) 
 data
 
-groupeddata3039<-filter(data, age == "40-49")
-groupeddata3039
+groupeddata4049<-filter(data, age == "40-49")
+malignancy4049<-c(groupeddata4049$deg.malig)
 
-
-gd<-c(groupeddata3039$deg.malig)
-gd
-
-#malignancy<-c(gd[[1]],gd[[2]])
-#malignancy
-
-P<-prop.table(table(gd[1:89],gd[2:90]),1)
+P<-prop.table(table(malignancy4049[1:89],malignancy4049[2:90]),1)
 P
+set.seed(123)
+#intial probability vector  
+pi<-c(0.6,0.2,0.2)
+#define states 
+degmalignancy<-c(1,2,3)
+
+#length of chain 
+n<-1000
+
+#create the chain object
+chain<-rep(NA, n)
+
+#initialize chain
+chain[1]<-sample(degmalignancy,1,p=pi)
+chain[1]
+
+#draw the second value from the chain
+(chain[2]<-sample(degmalignancy,1,p=P[chain[1],]))
+
+#keep drawing
+for (i in 2:999){
+chain[i+1]<-sample(degmalignancy,1,p=P[chain[i],])
+} 
+
+#Look at the first 25 elements of the chain.
+chain[1:25]
+
+
+#simulate the chain 10000 times
+nsim<-10000
+
+#blank chain object to store freq of transition rates (1 -> 2) for each simulation
+freq1_2<-rep(0,nsim)
+
+for(q in 1:nsim){
+
+#create blank chain object the length of n
+chain<-rep(NA,n)
+#initialize chain
+chain[1]<-sample(degmalignancy,1,p=pi)
+#populate chain
+for(i in 1:(n-1)){
+ chain[i+1]<-sample(degmalignancy,1,p=P[chain[i],])
+}
+#calculate frequency of nucleotide 'c'
+freq1_2[q]<-prop.table(table(chain[1:(n-1)],chain[2:n]))[1,2]
+}
+
+#confidence interval for transitioning from state 1 -> 2 
+alpha<-0.05
+z<-qnorm(1-(alpha/2))
+z
+
+samp<-freq1_2[1:1000]
+phat<-(table(samp)[1])/length(samp)
+
+n<-length(samp)
+
+lowerbound<-phat-(z*sqrt(phat*(1-phat)/n))
+upperbound<-phat+(z*sqrt(phat*(1-phat)/n))
+c(lowerbound,upperbound)
+
+
+#Confidence Intervals 
+alpha<-0.05
+z<-qnorm(1-(alpha/2))
+z
+
+
+
+samp<-chain[1:1000]
+phat1<-(table(samp)[1])/length(samp)
+phat2<-(table(samp)[2])/length(samp)
+phat3<-(table(samp)[3])/length(samp)
+
+n<-length(samp)
+
+lowerbound<-phat1-(z*sqrt(phat1*(1-phat1)/n))
+upperbound<-phat1+(z*sqrt(phat1*(1-phat1)/n))
+c(lowerbound,upperbound)
+
+#We can conclude with 95% confidence that the true proportion of degree of malignancy state '1' in the chain is between 0.1723487 and 0.2216513 
+#1->2 
 
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
 summary(cars)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
