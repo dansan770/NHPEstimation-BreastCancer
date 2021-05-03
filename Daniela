@@ -1,0 +1,2 @@
+newdata<-mutate(datapro,stageoflife = ifelse(menopause > "ge40", "postmenopause","premenopause"))
+
