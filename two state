@@ -1,0 +1,63 @@
+#for the age of 40
+
+ageof40s<-subset(newdata, age == "40-49",na.action = na.omit)
+
+#where the transition matrix is a two state going from premenopause(PA) to postmenopause(PB) (I did A and B because A comes before B, just like pre comes before post)
+
+#calculating the conditional Probability for P(1|PA) P(2|PA) P(3|PA)
+
+matrixforpro<-table(ageof40s$deg.malig,ageof40s$stageoflife)
+matrixforpro
+
+#now calculating for premenopause.
+#P(1|PA) = P(1&premenopause)/P(premenopause)
+
+0/9 
+#the probability of P(1|PA) is 0. 
+
+#P(2|PA) = P(2&premenopause)/P(premenopause)
+
+4/9
+#the probability of P(2|PA) is 0.44.
+
+#P(3|PA) = P(3&premenopause)/P(premenopause)
+
+5/9 
+#the probability of P(3|PA) is 0.55.
+
+#now calculating for postmenopause.
+#P(1|PA) = P(1&postmenopause)/P(postmenopause)
+
+18/81 
+#the probability of P(1|PB) is 0.22. 
+
+#P(2|PA) = P(2&postmenopause)/P(postmenopause)
+
+44/81
+
+#the probability of P(2|PB) is 0.54.
+
+#P(3|PA) = P(3&postmenopause)/P(postmenopause)
+
+19/81
+
+#the probability of P(3|PB) is 0.23.
+
+#the initial prob is 1/2. 
+#the transition probabilities are (made them up unless someone knows how to calculate it).
+#emission probabilities are P(1|PA) = 0, P(2|PA) 0.44, P(3|PA) 0.55 and P(1|PB) = 0.22, P(2|PB) = 0.54 and P(3|PB) = 0.23. 
+
+#what is the likely hood that a women between the ages of 40-49 will develop a degree of malignancy of either 1,2,3 during premenopausal stage.
+
+#x = 1  2  3
+#pi= PA PA PA 
+
+
+#what is the likely good that a women between the age of 40-49 will develop a degree of malignancy of either 1,2,3 during postmenopausal stage. 
+
+#x = 1  2  3
+#pi= PB PB PB 
+
+
+
+#for the age of 20-29
